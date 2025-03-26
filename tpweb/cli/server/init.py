@@ -100,7 +100,7 @@ def init(args):
             f.write("")
 
         # create server directory
-        #os.mkdir("data/servers")
+        os.mkdir("data/servers")
 
         serverInfo = {
             "id": 1,
