@@ -2,7 +2,7 @@
 
 # This script is used to install TPWeb CP on a fresh Almalinux 9 system
 VERSION="0.0.1"
-INSTALLDIR="/home/azureuser/tpweb"
+INSTALLDIR="/usr/local/tpwebcp"
 
 # Check if this server is running Almalinux 9
 if [ ! -f /etc/almalinux-release ]; then
@@ -49,14 +49,14 @@ EOF
 fi
 
 # Install tpweb
-mkdir -p $INSTALLDIR
-cd $INSTALLDIR
+git clone https://github.com/madeITBelgium/TPWebCP.git $INSTALLDIR
 
+# Install config
 mkdir -p /etc/tpwebcp/caddy /etc/tpwebcp/caddy/ssl /etc/tpwebcp/caddy/domains /etc/tpwebcp/bind
 
+# Install templates
 cp $INSTALLDIR/templates/server/.env.template /root/.env
 cp $INSTALLDIR/templates/server/docker-compose.yml /root/docker-compose.yml
-
 cp $INSTALLDIR/templates/server/config/caddy/* /etc/tpwebcp/caddy/
 
 wget https://raw.githubusercontent.com/corazawaf/coraza/v3/dev/coraza.conf-recommended -O /etc/tpwebcp/caddy/coraza_rules.conf
@@ -73,11 +73,12 @@ docker --context default run --rm \
 find /etc/tpwebcp/bind/ -type d -print0 | xargs -0 chmod 755
 find /etc/tpwebcp/bind/ -type f -print0 | xargs -0 chmod 644
 
-# Download tpweb
-#URL="https://www.tpweb.org/download/tpweb-$VERSION.tar.gz"
-#wget $URL
-#tar -xvf tpweb-$VERSION.tar.gz
-#rm tpweb-$VERSION.tar.gz
+# Start docker container
+cd /root
+docker compose up -d
+
+# Add $INSTALLDIR to PATH of root user
+echo "export PATH=\$PATH:$INSTALLDIR" >> /root/.bashrc
 
 # Ask if current hostname is correct or not
 echo "Current hostname is $(hostname)"
@@ -90,6 +91,8 @@ else
     hostnamectl set-hostname $NEWHOSTNAME
     echo "Hostname changed to $NEWHOSTNAME"
 fi
+
+$INSTALLDIR/tpweb-bin init --main
 
 exit 0
 
