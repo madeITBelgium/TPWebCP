@@ -71,7 +71,8 @@ def init(args):
             isDnsMaster = True
         
         # create data folder
-        os.mkdir("/usr/local/tpwebcp/data")
+        if not os.path.exists("/usr/local/tpwebcp/data"):
+            os.mkdir("/usr/local/tpwebcp/data")
 
         # Create .env file
         with open(".env", "w") as f:
@@ -100,7 +101,8 @@ def init(args):
             f.write("")
 
         # create server directory
-        os.mkdir("data/servers")
+        if not os.path.exists("data/servers"):
+            os.mkdir("data/servers")
 
         serverInfo = {
             "id": 1,
