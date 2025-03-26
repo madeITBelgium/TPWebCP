@@ -1,0 +1,59 @@
+services:
+  # Malware Scanner used from user panel
+  clamav:
+    image: clamav/clamav:${CLAMAV_VERSION}
+    container_name: clamav
+    volumes:
+      - /home:/home
+      - /etc/tpwebcp/clamav-db:/var/lib/clamav
+    restart: unless-stopped
+    network_mode: ${CLAMAV_DB_AUTOUPDATE} # needed to update db daily
+    environment:
+      - CLAMD_STARTUP_DELAY=${CLAMD_STARTUP_DELAY}
+    mem_limit: ${CLAMAV_RAM}
+    cpus: ${CLAMAV_CPUS}
+
+  # Webserver
+  caddy:
+    image: ${CADDY_IMAGE}
+    container_name: caddy
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - /etc/tpwebcp/caddy/Caddyfile:/etc/caddy/Caddyfile                           # Caddy config
+      - /etc/tpwebcp/caddy/ssl:/data/caddy/certificates                             # Custom SSL certificates
+      - /etc/tpwebcp/caddy/:/etc/tpwebcp/caddy/                                   # domain files, templates 
+      - /etc/tpwebcp/caddy/coraza_rules.conf:/etc/tpwebcp/caddy/coraza_rules.conf # default rules
+      - /var/log/caddy/:/var/log/caddy/
+    restart: unless-stopped
+    mem_limit: ${CADDY_RAM}
+    cpus: ${CADDY_CPUS}
+    oom_kill_disable: true
+    network_mode: host
+
+  # DNS
+  bind9:
+    container_name: openpanel_dns
+    image: ubuntu/bind9:${BIND9_VERSION}
+    environment:
+      - BIND9_USER=root
+      - TZ=${BIND_TIMEZONE}
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - /etc/tpwebcp/bind/:/etc/bind/
+    restart: unless-stopped
+    mem_limit: ${BIND9_RAM}
+    cpus: ${BIND9_CPUS}
+    oom_kill_disable: true
+    networks:
+      - tpweb_network
+
+# define custom network
+networks:
+  tpweb_network:
+    driver: bridge
+    labels:
+      description: "This network allows TPWeb CP to communicate to system containers."
+      purpose: "internal"

@@ -1,0 +1,12 @@
+# ssl
+{
+    on_demand_tls {
+        ask "http://localhost/check"
+    }
+}
+
+# import /check route
+import /etc/tpwebcp/caddy/check.conf
+
+# import all sites
+import /etc/tpwebcp/caddy/domains/*

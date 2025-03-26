@@ -1,0 +1,106 @@
+services:
+  #webserver (nginx)
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - 1#ID#1:80
+      - 1#ID#2:443
+    volumes:
+      - ./storage/web:/var/www/public
+      - ./config/nginx/conf:/etc/nginx/conf.d
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./storage/logs:/var/log/nginx
+    environment: 
+      - TZ=UTC
+    networks:
+      - #domainstr#
+
+  #backend (php-fpm or php-apache)
+  backend:
+    build:
+      context: config/php
+      dockerfile: Dockerfile
+    user: "#userid#:#userid#"
+    ports:
+      - 1#ID#3:80
+    volumes:
+      - ./storage/web:/var/www/public
+      - ./config/php/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./storage/logs:/var/log/php-fpm
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/apache/apache2.conf:/etc/apache2/apache2.conf
+      - ./config/apache/default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./storage/logs:/var/log/apache2
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+    networks:
+      - #domainstr#
+  
+  #database (mysql)
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    ports:
+      - 1#ID#4:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: #domainstr#_wp
+      MYSQL_USER: #domainstr#_wp
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - ./storage/db:/var/lib/mysql
+      - ./storage/web:/var/www/html
+    networks:
+      - #domainstr#
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "1#ID#5:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: wordpress
+      UPLOAD_LIMIT: 2G
+    networks:
+      - #domainstr#
+
+  # ssh:
+  #   build:
+  #     context: config/ssh
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./storage/web:/var/www/public
+  #   restart: unless-stopped
+  #   networks:
+  #     - #domainstr#
+
+  redis:
+    image: bitnami/redis:latest
+    restart: unless-stopped
+    #ports:
+    #  - 1#ID#6:6379
+    volumes:
+      - ./storage/redis:/data
+    environment:
+      - REDIS_PASSWORD=redis
+    networks:
+      - #domainstr#
+
+  # mail:
+    # build:
+    #   context: .
+    #   dockerfile: mail/Dockerfile
+    # volumes:
+    #   - ./storage/mail:/var/mail
+    # restart: unless-stopped
+
+networks:
+  #domainstr#:
+    driver: bridge
