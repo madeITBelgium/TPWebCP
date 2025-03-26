@@ -69,10 +69,13 @@ def init(args):
         if os.path.exists("powerdns"):
             hasPowerDNS = True
             isDnsMaster = True
+        
+        # create data folder
+        os.mkdir("/usr/local/tpwebcp/data")
 
         # Create .env file
         with open(".env", "w") as f:
-            f.write("ROOT_DIR=" + os.getcwd() + "\n")
+            f.write("ROOT_DIR=/usr/local/tpwebcp\n")
             f.write("SERVER_TYPE=main\n")
             f.write("IPV6=" + ipv6 + "\n")
             f.write("IPV4=" + ipv4 + "\n")
@@ -85,15 +88,15 @@ def init(args):
             f.write("IS_DNS_MASTER=" + str(isDnsMaster) + "\n")
 
         # create empty users.conf file
-        with open("data/users.conf", "w") as f:
+        with open("/usr/local/tpwebcp/data/users.conf", "w") as f:
             f.write("")
 
         # create empty domains.conf file
-        with open("data/domains.conf", "w") as f:
+        with open("/usr/local/tpwebcp/data/domains.conf", "w") as f:
             f.write("")
 
         # create empty servers.conf file
-        with open("data/servers.conf", "w") as f:
+        with open("/usr/local/tpwebcp/data/servers.conf", "w") as f:
             f.write("")
 
         # create server directory
@@ -119,10 +122,10 @@ def init(args):
         }
 
         # create server config file
-        with open("data/servers/1.conf", "w") as f:
+        with open("/usr/local/tpwebcp/data/servers/1.conf", "w") as f:
             f.write(json.dumps(serverInfo, indent=4))
 
-        with open("data/servers.conf", "w") as f:
+        with open("/usr/local/tpwebcp/data/servers.conf", "w") as f:
             f.write("1:main:" + hostname + "\n")
         
     # if args contains --worker
