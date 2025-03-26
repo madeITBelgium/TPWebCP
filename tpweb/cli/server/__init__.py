@@ -6,6 +6,7 @@ from pathlib import Path
 from .get import get
 from .init import init
 from .sync import sync
+from .update import update
 
 from tpweb.cli import Command
 from tpweb.data.model import NotImplementedError
@@ -53,6 +54,9 @@ class Server(Command):
 
         elif command == "sync":
             sync(args)
+
+        elif command == "update":
+            update(args)
             
         elif command == "haproxy":
             from .init import setupHaproxy
