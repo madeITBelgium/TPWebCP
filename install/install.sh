@@ -77,6 +77,9 @@ docker --context default run --rm \
 find /etc/tpwebcp/bind/ -type d -print0 | xargs -0 chmod 755
 find /etc/tpwebcp/bind/ -type f -print0 | xargs -0 chmod 644
 
+curl -sSL https://get.docker.com/rootless -o $INSTALLDIR/docker/dockerd-rootless-setuptool.sh
+chmod +x  $INSTALLDIR/docker/dockerd-rootless-setuptool.sh
+
 # Start docker container
 cd /root
 docker compose up -d

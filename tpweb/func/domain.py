@@ -65,7 +65,7 @@ def create_domain_filesystem_main(username, domainname, Web=True, DNS=True, Mail
     docroot = '/var/www/html/' + domainname
     
     #Create docroot directory
-    output = subprocess.run(['docker', '--context', username, 'compose', '-f', '/home/' + username + '/docker-compose.yml', 'run', '--rm', '-v', username + '_html_data:/var/www/html/', 'busybox', 'sh', '-c', 'mkdir -p ' + docroot + ' && chown 0:33 ' + docroot + ' && chmod -R g+w ' + docroot])
+    output = subprocess.run(['docker', '--context', username, 'compose', '-f', '/home/' + username + '/docker-compose.yml', 'run', '--rm', 'busybox', 'sh', '-c', 'mkdir -p ' + docroot + ' && chown 0:33 ' + docroot + ' && chmod -R g+w ' + docroot])
     if output.returncode != 0:
         raise Exception('Failed to create directories')
     
