@@ -50,6 +50,10 @@ fi
 
 # Install tpweb
 git clone https://github.com/madeITBelgium/TPWebCP.git $INSTALLDIR
+cd $INSTALLDIR/tpweb
+
+# pip3 install requirements
+pip3 install -r requirements.txt
 
 # Install config
 mkdir -p /etc/tpwebcp/caddy /etc/tpwebcp/caddy/ssl /etc/tpwebcp/caddy/domains /etc/tpwebcp/bind

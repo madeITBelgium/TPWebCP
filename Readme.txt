@@ -1,3 +1,17 @@
+# Install
+
+```
+curl https://raw.githubusercontent.com/madeITBelgium/TPWebCP/refs/heads/main/install/install.sh | bash
+```
+
+```
+curl -O https://raw.githubusercontent.com/madeITBelgium/TPWebCP/refs/heads/main/install/install.sh
+```
+
+```
+bash install.sh
+```
+
 # Todo
 
 [ ] Install scripts
