@@ -52,7 +52,7 @@ fi
 git clone https://github.com/madeITBelgium/TPWebCP.git $INSTALLDIR
 cd $INSTALLDIR/tpweb
 
-# pip3 install requirements
+# pip3 install requirements as root
 pip3 install -r requirements.txt
 
 # Install config
